@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quy Trình Chứng Từ - Đồng Nhất PDF & PNG</title>
+    <title>Quy Trình Chứng Từ - Final Full Text</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     
     <!-- Thư viện chụp ảnh & PDF -->
@@ -96,7 +96,7 @@
         }
         .mermaid { width: 100%; display: flex; justify-content: center; }
 
-        /* --- CARD STYLE (Định dạng giống File PNG bạn thích) --- */
+        /* --- CARD STYLE --- */
         .card {
             border-radius: 4px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             border: 1px solid #ccc; background: white; text-align: left; font-family: 'Roboto', sans-serif;
@@ -108,15 +108,15 @@
         .card-body {
             padding: 2px 4px; font-size: 9px; color: #333; background-color: #fff; line-height: 1.2;
         }
-        /* Màu sắc chuẩn */
-        .fin-card { border-color: #27ae60; } .fin-card .card-header { background-color: #27ae60; } /* Xanh lá */
-        .exp-card { border-color: #c0392b; } .exp-card .card-header { background-color: #c0392b; } /* Đỏ */
-        .doc-card { border-color: #f39c12; } .doc-card .card-header { background-color: #f39c12; } /* Cam vàng */
+        .fin-card { border-color: #27ae60; } .fin-card .card-header { background-color: #27ae60; }
+        .exp-card { border-color: #c0392b; } .exp-card .card-header { background-color: #c0392b; }
+        .doc-card { border-color: #f39c12; } .doc-card .card-header { background-color: #f39c12; }
 
         .lbl-content { display: block; margin-bottom: 1px; font-weight: 500; }
-        .lbl-time { display: block; font-style: italic; color: #666; font-size: 9px; transform: scale(0.9); transform-origin: left; border-top: 1px dashed #eee; padding-top: 2px; }
+        .lbl-time { display: block; font-style: italic; color: #666; font-size: 9px; transform: scale(0.95); transform-origin: left; border-top: 1px dashed #eee; padding-top: 2px; }
         
-        .card-md { width: 150px; } 
+        /* Điều chỉnh độ rộng thẻ 1 chút để chứa đủ chữ không viết tắt */
+        .card-md { width: 165px; } 
         .card-lg { width: 220px; }
 
     </style>
@@ -127,7 +127,7 @@
         <div class="dropdown">
             <button class="dropbtn">⬇ Tùy Chọn Tải Xuống ▼</button>
             <div class="dropdown-content">
-                <a onclick="downloadPDF()" class="pdf-btn">📄 Tải File PDF (Đúng mẫu PNG)</a>
+                <a onclick="downloadPDF()" class="pdf-btn">📄 Tải File PDF (3 trong 1)</a>
                 <hr style="margin: 0; border: 0; border-top: 1px solid #eee;">
                 <a onclick="capturePage('page1', 'Trang1.png')">🖼️ Tải PNG Trang 1</a>
                 <a onclick="capturePage('page2', 'Trang2.png')">🖼️ Tải PNG Trang 2</a>
@@ -136,7 +136,7 @@
         </div>
     </div>
 
-    <!-- === TRANG 1: Giữ nguyên bố cục B2 (1 chĩa 4) === -->
+    <!-- === TRANG 1 === -->
     <div id="page1" class="a4-page">
         <div class="page-header">
             <h1>Quy Trình Chính (Bước 1 - Bước 3)</h1>
@@ -158,7 +158,7 @@
                         direction TB
                         S1(1. KHÁCH KÝ HĐ):::step
                         D1("<div class='card card-md doc-card'><div class='card-header'>HỢP ĐỒNG</div><div class='card-body'><span class='lbl-content'>Ký HĐ dịch vụ</span></div></div>")
-                        F1("<div class='card card-md fin-card'><div class='card-header'>PHIẾU THU</div><div class='card-body'><span class='lbl-content'>Cọc tiền theo HĐ...</span><span class='lbl-time'>Khi ký HĐ và cọc</span></div></div>")
+                        F1("<div class='card card-md fin-card'><div class='card-header'>PHIẾU THU</div><div class='card-body'><span class='lbl-content'>Cọc tiền theo HĐ...</span><span class='lbl-time'>Khi ký hợp đồng và cọc</span></div></div>")
                         S1 --> D1
                         S1 --> F1
                     end
@@ -171,8 +171,11 @@
                         direction TB
                         S2(2. KHÁCH CHỤP):::step
                         D2a("<div class='card card-md doc-card'><div class='card-header'>BB GIAO NHẬN VT</div><div class='card-body'><span class='lbl-content'>Ghi dụng cụ bàn giao</span><span class='lbl-time'>Trước khi chụp</span></div></div>")
-                        F2a("<div class='card card-md fin-card'><div class='card-header'>HÓA ĐƠN BÁN</div><div class='card-body'><span class='lbl-content'>Thu tiền chụp theo HĐ...</span><span class='lbl-time'>Sau HT & TT</span></div></div>")
-                        F2b("<div class='card card-md fin-card'><div class='card-header'>PHIẾU THU</div><div class='card-body'><span class='lbl-content'>TT lần 2 theo HĐ...</span><span class='lbl-time'>Sau HT & TT</span></div></div>")
+                        
+                        F2a("<div class='card card-md fin-card'><div class='card-header'>HÓA ĐƠN BÁN</div><div class='card-body'><span class='lbl-content'>Thu tiền chụp theo HĐ...</span><span class='lbl-time'>Sau khi hoàn thành & thanh toán</span></div></div>")
+                        
+                        F2b("<div class='card card-md fin-card'><div class='card-header'>PHIẾU THU</div><div class='card-body'><span class='lbl-content'>TT lần 2 theo HĐ...</span><span class='lbl-time'>Sau khi hoàn thành & thanh toán</span></div></div>")
+                        
                         D2b("<div class='card card-md doc-card'><div class='card-header'>BB XÁC NHẬN CV</div><div class='card-body'><span class='lbl-content'>NV xác nhận công việc</span><span class='lbl-time'>Sau khi chụp</span></div></div>")
                         S2 --> D2a & F2a & F2b & D2b
                     end
@@ -180,8 +183,8 @@
                     subgraph B3 [BƯỚC 3: LẤY ẢNH]
                         direction TB
                         S3(3. KHÁCH LẤY ẢNH):::step
-                        F3a("<div class='card card-md fin-card'><div class='card-header'>PHIẾU THU</div><div class='card-body'><span class='lbl-content'>TT lần 3 theo HĐ...</span><span class='lbl-time'>Khi nhận SP</span></div></div>")
-                        F3b("<div class='card card-md fin-card'><div class='card-header'>HÓA ĐƠN BÁN</div><div class='card-body'><span class='lbl-content'>Quyết toán album/ảnh</span><span class='lbl-time'>Khi nhận SP</span></div></div>")
+                        F3a("<div class='card card-md fin-card'><div class='card-header'>PHIẾU THU</div><div class='card-body'><span class='lbl-content'>TT lần 3 theo HĐ...</span><span class='lbl-time'>Khi nhận sản phẩm</span></div></div>")
+                        F3b("<div class='card card-md fin-card'><div class='card-header'>HÓA ĐƠN BÁN</div><div class='card-body'><span class='lbl-content'>Quyết toán album/ảnh</span><span class='lbl-time'>Khi nhận sản phẩm</span></div></div>")
                         S3 --> F3a
                         S3 --> F3b
                     end
@@ -193,7 +196,7 @@
         <div class="page-number">Trang 1/3</div>
     </div>
 
-    <!-- === TRANG 2: DÀN NGANG (Giống Trang 3) === -->
+    <!-- === TRANG 2 === -->
     <div id="page2" class="a4-page">
         <div class="page-header">
             <h1>Quy Trình Phụ Trợ (Bước 4 - Bước 5)</h1>
@@ -233,7 +236,7 @@
         <div class="page-number">Trang 2/3</div>
     </div>
 
-    <!-- === TRANG 3: DÀN NGANG === -->
+    <!-- === TRANG 3 === -->
     <div id="page3" class="a4-page">
         <div class="page-header">
             <h1>Quy Trình Chi Phí & Nội Bộ (Bước 6 - Bước 7)</h1>
@@ -256,7 +259,7 @@
                         direction TB
                         S6(6. CHI MUA SẮM):::step
                         F6a("<div class='card exp-card card-lg'><div class='card-header'>PHIẾU CHI</div><div class='card-body'><span class='lbl-content'>Ghi đầy đủ nội dung chi</span><span class='lbl-time'>Trong hạn mức: Xuất sau<br/>Ngoài hạn mức: Xuất trước</span></div></div>")
-                        F6b("<div class='card exp-card card-lg'><div class='card-header'>HÓA ĐƠN MUA HÀNG</div><div class='card-body'><span class='lbl-content'>Ghi nội dung chi</span><span class='lbl-time'>Lấy của bên bán</span></div></div>")
+                        F6b("<div class='card exp-card card-lg'><div class='card-header'>HÓA ĐƠN MUA HÀNG</div><div class='card-body'><span class='lbl-content'>Ghi nội dung chi</span><span class='lbl-time'>Lấy của bên bán hàng</span></div></div>")
                         S6 --> F6a
                         S6 --> F6b
                     end
@@ -291,14 +294,11 @@
         });
     </script>
 
-    <!-- LOGIC TẢI ẢNH & PDF (ĐỒNG NHẤT) -->
+    <!-- LOGIC TẢI PDF (GIỮ NGUYÊN) -->
     <script>
-        // Hàm chụp ảnh cơ bản
         function capturePage(elementId, fileName) {
             return new Promise((resolve) => {
                 const element = document.getElementById(elementId);
-                
-                // Tăng scale lên 3 để PDF nét hơn
                 html2canvas(element, {
                     scale: 3, 
                     useCORS: true, 
@@ -306,42 +306,38 @@
                     width: element.scrollWidth,
                     height: element.scrollHeight
                 }).then(canvas => {
-                    // Nếu có fileName thì tải xuống (chế độ tải ảnh)
                     if (fileName) {
                         const link = document.createElement('a');
                         link.download = fileName;
                         link.href = canvas.toDataURL("image/jpeg", 0.98); 
                         link.click();
                     }
-                    resolve(canvas); // Trả về canvas cho PDF dùng
+                    resolve(canvas);
                 });
             });
         }
 
-        // Hàm tạo PDF từ ảnh chụp
         async function downloadPDF() {
             const btn = document.querySelector('.dropbtn');
             const originalText = btn.innerText;
             btn.innerText = "⏳ Đang tạo PDF...";
 
             const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('l', 'mm', 'a4'); // Khổ A4 Ngang
+            const pdf = new jsPDF('l', 'mm', 'a4');
             const pageWidth = 297;
             const pageHeight = 210;
             const pages = ['page1', 'page2', 'page3'];
 
             for (let i = 0; i < pages.length; i++) {
-                // Chụp lại giao diện hiện tại (đảm bảo giống hệt PNG)
                 const canvas = await capturePage(pages[i], null); 
                 const imgData = canvas.toDataURL('image/jpeg', 0.98);
-
                 if (i > 0) pdf.addPage(); 
                 pdf.addImage(imgData, 'JPEG', 0, 0, pageWidth, pageHeight);
             }
 
             pdf.save('QuyTrinh_ChungTu_Full.pdf');
             btn.innerText = originalText;
-            alert("Đã tải xong PDF! Kiểm tra thư mục tải xuống.");
+            alert("Đã tải xong PDF!");
         }
     </script>
 </body>
