@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quy Trình Chứng Từ - Đồng Nhất PDF & PNG</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Thư viện chụp ảnh & PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #2d3436;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+        }
+
+        /* --- MENU --- */
+        .control-bar { position: sticky; top: 10px; z-index: 2000; }
+        .dropdown { position: relative; display: inline-block; }
+        .dropbtn {
+            background-color: #e67e22; color: white; padding: 12px 30px;
+            font-size: 15px; font-weight: bold; border: none; border-radius: 30px;
+            cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            display: flex; align-items: center; gap: 10px; transition: 0.3s;
+        }
+        .dropbtn:hover { background-color: #d35400; }
+        .dropdown-content {
+            display: none; position: absolute; background-color: #fff;
+            min-width: 250px; box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            z-index: 1; border-radius: 8px; overflow: hidden;
+            top: 110%; left: 50%; transform: translateX(-50%);
+        }
+        .dropdown-content a {
+            color: #333; padding: 12px 16px; text-decoration: none; display: block;
+            font-size: 13px; font-weight: 500; cursor: pointer; border-bottom: 1px solid #eee;
+        }
+        .dropdown-content a:hover { background-color: #fad390; }
+        .dropdown:hover .dropdown-content { display: block; }
+        
+        .pdf-btn { color: #c0392b !important; font-weight: bold !important; background-color: #fff0f0; }
+
+        /* --- A4 PAGE SETUP --- */
+        .a4-page {
+            width: 297mm;
+            height: 210mm;
+            background: white;
+            padding: 5mm; 
+            box-sizing: border-box;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden; 
+        }
+
+        .page-header {
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 2px;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+        .page-header h1 { margin: 0; color: #2c3e50; font-size: 18px; text-transform: uppercase; }
+        
+        .page-note {
+            font-size: 11px;
+            color: #c0392b;
+            font-style: italic;
+            font-weight: bold;
+            margin-top: 2px;
+        }
+
+        .page-number { position: absolute; bottom: 5mm; right: 10mm; font-size: 10px; color: #999; }
+
+        .legend {
+            display: flex; justify-content: center; gap: 20px;
+            margin-bottom: 5px; font-size: 11px; font-weight: 500;
+        }
+        .dot { width: 10px; height: 10px; display: inline-block; margin-right: 5px; border-radius: 2px; vertical-align: middle; }
+        .dot-step { background: #2c3e50; } .dot-doc { background: #f39c12; }
+        .dot-fin { background: #27ae60; } .dot-exp { background: #c0392b; }
+
+        .mermaid-container {
+            flex-grow: 1;
+            width: 100%;
+            display: flex;
+            align-items: center; justify-content: center;
+            margin-top: -10px;
+        }
+        .mermaid { width: 100%; display: flex; justify-content: center; }
+
+        /* --- CARD STYLE (Định dạng giống File PNG bạn thích) --- */
+        .card {
+            border-radius: 4px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #ccc; background: white; text-align: left; font-family: 'Roboto', sans-serif;
+        }
+        .card-header {
+            padding: 2px 4px; font-size: 10px; font-weight: bold;
+            color: white; text-transform: uppercase; text-align: center; line-height: 1.1;
+        }
+        .card-body {
+            padding: 2px 4px; font-size: 9px; color: #333; background-color: #fff; line-height: 1.2;
+        }
+        /* Màu sắc chuẩn */
+        .fin-card { border-color: #27ae60; } .fin-card .card-header { background-color: #27ae60; } /* Xanh lá */
+        .exp-card { border-color: #c0392b; } .exp-card .card-header { background-color: #c0392b; } /* Đỏ */
+        .doc-card { border-color: #f39c12; } .doc-card .card-header { background-color: #f39c12; } /* Cam vàng */
+
+        .lbl-content { display: block; margin-bottom: 1px; font-weight: 500; }
+        .lbl-time { display: block; font-style: italic; color: #666; font-size: 9px; transform: scale(0.9); transform-origin: left; border-top: 1px dashed #eee; padding-top: 2px; }
+        
+        .card-md { width: 150px; } 
+        .card-lg { width: 220px; }
+
+    </style>
+</head>
+<body>
+
+    <div class="control-bar">
+        <div class="dropdown">
+            <button class="dropbtn">⬇ Tùy Chọn Tải Xuống ▼</button>
+            <div class="dropdown-content">
+                <a onclick="downloadPDF()" class="pdf-btn">📄 Tải File PDF (Đúng mẫu PNG)</a>
+                <hr style="margin: 0; border: 0; border-top: 1px solid #eee;">
+                <a onclick="capturePage('page1', 'Trang1.png')">🖼️ Tải PNG Trang 1</a>
+                <a onclick="capturePage('page2', 'Trang2.png')">🖼️ Tải PNG Trang 2</a>
+                <a onclick="capturePage('page3', 'Trang3.png')">🖼️ Tải PNG Trang 3</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- === TRANG 1: Giữ nguyên bố cục B2 (1 chĩa 4) === -->
+    <div id="page1" class="a4-page">
+        <div class="page-header">
+            <h1>Quy Trình Chính (Bước 1 - Bước 3)</h1>
+            <div class="page-note">(Lưu ý: toàn bộ hóa đơn, biên bản phải gom và để theo từng đơn hàng)</div>
+        </div>
+        <div class="legend">
+            <div><span class="dot dot-step"></span>Quy trình</div>
+            <div><span class="dot dot-doc"></span>Hợp đồng / Biên bản</div>
+            <div><span class="dot dot-fin"></span>Thu Tiền / Hóa Đơn</div>
+        </div>
+        <div class="mermaid-container">
+            <div class="mermaid">
+                flowchart TB
+                classDef step fill:#2c3e50,stroke:#1a252f,color:white,font-size:12px,font-weight:bold,rx:4,ry:4,padding:5px;
+
+                subgraph TOP_ROW [ ]
+                    direction TB
+                    subgraph B1 [BƯỚC 1: KÝ HỢP ĐỒNG]
+                        direction TB
+                        S1(1. KHÁCH KÝ HĐ):::step
+                        D1("<div class='card card-md doc-card'><div class='card-header'>HỢP ĐỒNG</div><div class='card-body'><span class='lbl-content'>Ký HĐ dịch vụ</span></div></div>")
+                        F1("<div class='card card-md fin-card'><div class='card-header'>PHIẾU THU</div><div class='card-body'><span class='lbl-content'>Cọc tiền theo HĐ...</span><span class='lbl-time'>Khi ký HĐ và cọc</span></div></div>")
+                        S1 --> D1
+                        S1 --> F1
+                    end
+                end
+
+                subgraph BOTTOM_ROW [ ]
+                    direction LR
+                    
+                    subgraph B2 [BƯỚC 2: CHỤP ẢNH]
+                        direction TB
+                        S2(2. KHÁCH CHỤP):::step
+                        D2a("<div class='card card-md doc-card'><div class='card-header'>BB GIAO NHẬN VT</div><div class='card-body'><span class='lbl-content'>Ghi dụng cụ bàn giao</span><span class='lbl-time'>Trước khi chụp</span></div></div>")
+                        F2a("<div class='card card-md fin-card'><div class='card-header'>HÓA ĐƠN BÁN</div><div class='card-body'><span class='lbl-content'>Thu tiền chụp theo HĐ...</span><span class='lbl-time'>Sau HT & TT</span></div></div>")
+                        F2b("<div class='card card-md fin-card'><div class='card-header'>PHIẾU THU</div><div class='card-body'><span class='lbl-content'>TT lần 2 theo HĐ...</span><span class='lbl-time'>Sau HT & TT</span></div></div>")
+                        D2b("<div class='card card-md doc-card'><div class='card-header'>BB XÁC NHẬN CV</div><div class='card-body'><span class='lbl-content'>NV xác nhận công việc</span><span class='lbl-time'>Sau khi chụp</span></div></div>")
+                        S2 --> D2a & F2a & F2b & D2b
+                    end
+
+                    subgraph B3 [BƯỚC 3: LẤY ẢNH]
+                        direction TB
+                        S3(3. KHÁCH LẤY ẢNH):::step
+                        F3a("<div class='card card-md fin-card'><div class='card-header'>PHIẾU THU</div><div class='card-body'><span class='lbl-content'>TT lần 3 theo HĐ...</span><span class='lbl-time'>Khi nhận SP</span></div></div>")
+                        F3b("<div class='card card-md fin-card'><div class='card-header'>HÓA ĐƠN BÁN</div><div class='card-body'><span class='lbl-content'>Quyết toán album/ảnh</span><span class='lbl-time'>Khi nhận SP</span></div></div>")
+                        S3 --> F3a
+                        S3 --> F3b
+                    end
+                end
+
+                TOP_ROW --> BOTTOM_ROW
+            </div>
+        </div>
+        <div class="page-number">Trang 1/3</div>
+    </div>
+
+    <!-- === TRANG 2: DÀN NGANG (Giống Trang 3) === -->
+    <div id="page2" class="a4-page">
+        <div class="page-header">
+            <h1>Quy Trình Phụ Trợ (Bước 4 - Bước 5)</h1>
+            <div class="page-note">(Lưu ý: toàn bộ hóa đơn, biên bản phải gom và để theo từng đơn hàng)</div>
+        </div>
+        <div class="legend">
+            <div><span class="dot dot-step"></span>Quy trình</div>
+            <div><span class="dot dot-doc"></span>Biên bản</div>
+            <div><span class="dot dot-fin"></span>Thu Tiền / Hóa Đơn</div>
+        </div>
+        <div class="mermaid-container">
+            <div class="mermaid">
+                flowchart TB
+                classDef step fill:#2c3e50,stroke:#1a252f,color:white,font-size:16px,font-weight:bold,rx:5,ry:5;
+
+                subgraph WRAPPER_PAGE2 [ ]
+                    direction LR
+                    
+                    subgraph B4 [BƯỚC 4: KHÁCH THUÊ ĐỒ]
+                        direction TB
+                        S4(4. KHÁCH THUÊ ĐỒ):::step
+                        F4a("<div class='card fin-card card-lg'><div class='card-header'>PHIẾU THU</div><div class='card-body'><span class='lbl-content'>Thanh toán phụ lục theo HĐ số...</span></div></div>")
+                        F4b("<div class='card fin-card card-lg'><div class='card-header'>HÓA ĐƠN BÁN HÀNG</div><div class='card-body'><span class='lbl-content'>Thu tiền khách thuê phụ lục...</span><span class='lbl-time'>Khi phát sinh thuê</span></div></div>")
+                        D4("<div class='card doc-card card-lg'><div class='card-header'>BIÊN BẢN GIAO NHẬN</div><div class='card-body'><span class='lbl-content'>Ghi toàn bộ SP khách thuê</span></div></div>")
+                        S4 --> F4a & F4b & D4
+                    end
+
+                    subgraph B5 [BƯỚC 5: KHÁCH MƯỢN ĐỒ]
+                        direction TB
+                        S5(5. KHÁCH MƯỢN ĐỒ):::step
+                        D5("<div class='card doc-card card-lg'><div class='card-header'>BIÊN BẢN GIAO NHẬN</div><div class='card-body'><span class='lbl-content'>Ghi toàn bộ SP khách mượn</span><span class='lbl-time'>Khi mượn đồ trong gói</span></div></div>")
+                        S5 --> D5
+                    end
+                end
+            </div>
+        </div>
+        <div class="page-number">Trang 2/3</div>
+    </div>
+
+    <!-- === TRANG 3: DÀN NGANG === -->
+    <div id="page3" class="a4-page">
+        <div class="page-header">
+            <h1>Quy Trình Chi Phí & Nội Bộ (Bước 6 - Bước 7)</h1>
+            <div class="page-note">(Lưu ý: toàn bộ hóa đơn, biên bản phải gom và để theo từng đơn hàng)</div>
+        </div>
+        <div class="legend">
+            <div><span class="dot dot-step"></span>Quy trình</div>
+            <div><span class="dot dot-doc"></span>Biên bản</div>
+            <div><span class="dot dot-exp"></span>Chi Tiền / Hóa Đơn Mua</div>
+        </div>
+        <div class="mermaid-container">
+            <div class="mermaid">
+                flowchart TB
+                classDef step fill:#2c3e50,stroke:#1a252f,color:white,font-size:16px,font-weight:bold,rx:5,ry:5;
+
+                subgraph WRAPPER_PAGE3 [ ]
+                    direction LR
+
+                    subgraph B6 [BƯỚC 6: CHI MUA SẮM]
+                        direction TB
+                        S6(6. CHI MUA SẮM):::step
+                        F6a("<div class='card exp-card card-lg'><div class='card-header'>PHIẾU CHI</div><div class='card-body'><span class='lbl-content'>Ghi đầy đủ nội dung chi</span><span class='lbl-time'>Trong hạn mức: Xuất sau<br/>Ngoài hạn mức: Xuất trước</span></div></div>")
+                        F6b("<div class='card exp-card card-lg'><div class='card-header'>HÓA ĐƠN MUA HÀNG</div><div class='card-body'><span class='lbl-content'>Ghi nội dung chi</span><span class='lbl-time'>Lấy của bên bán</span></div></div>")
+                        S6 --> F6a
+                        S6 --> F6b
+                    end
+
+                    subgraph B7 [BƯỚC 7: GIẶT VÁY]
+                        direction TB
+                        S7(7. GIẶT VÁY):::step
+                        D7("<div class='card doc-card card-lg'><div class='card-header'>BIÊN BẢN GIAO NHẬN</div><div class='card-body'><span class='lbl-content'>Ghi mã váy, vest...</span><span class='lbl-time'>Trước khi giao giặt</span></div></div>")
+                        F7a("<div class='card exp-card card-lg'><div class='card-header'>PHIẾU CHI</div><div class='card-body'><span class='lbl-content'>Thanh toán phí giặt...</span><span class='lbl-time'>Khi thanh toán</span></div></div>")
+                        F7b("<div class='card exp-card card-lg'><div class='card-header'>HÓA ĐƠN BÁN HÀNG</div><div class='card-body'><span class='lbl-content'>Lấy của bên giặt</span></div></div>")
+                        S7 --> D7 & F7a & F7b
+                    end
+                end
+            </div>
+        </div>
+        <div class="page-number">Trang 3/3</div>
+    </div>
+
+    <!-- MERMAID CONFIG -->
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ 
+            startOnLoad: true, 
+            theme: 'base',
+            flowchart: { 
+                htmlLabels: true,
+                useMaxWidth: true,
+                curve: 'basis',
+                rankSpacing: 20, 
+                nodeSpacing: 10
+            } 
+        });
+    </script>
+
+    <!-- LOGIC TẢI ẢNH & PDF (ĐỒNG NHẤT) -->
+    <script>
+        // Hàm chụp ảnh cơ bản
+        function capturePage(elementId, fileName) {
+            return new Promise((resolve) => {
+                const element = document.getElementById(elementId);
+                
+                // Tăng scale lên 3 để PDF nét hơn
+                html2canvas(element, {
+                    scale: 3, 
+                    useCORS: true, 
+                    backgroundColor: "#ffffff",
+                    width: element.scrollWidth,
+                    height: element.scrollHeight
+                }).then(canvas => {
+                    // Nếu có fileName thì tải xuống (chế độ tải ảnh)
+                    if (fileName) {
+                        const link = document.createElement('a');
+                        link.download = fileName;
+                        link.href = canvas.toDataURL("image/jpeg", 0.98); 
+                        link.click();
+                    }
+                    resolve(canvas); // Trả về canvas cho PDF dùng
+                });
+            });
+        }
+
+        // Hàm tạo PDF từ ảnh chụp
+        async function downloadPDF() {
+            const btn = document.querySelector('.dropbtn');
+            const originalText = btn.innerText;
+            btn.innerText = "⏳ Đang tạo PDF...";
+
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('l', 'mm', 'a4'); // Khổ A4 Ngang
+            const pageWidth = 297;
+            const pageHeight = 210;
+            const pages = ['page1', 'page2', 'page3'];
+
+            for (let i = 0; i < pages.length; i++) {
+                // Chụp lại giao diện hiện tại (đảm bảo giống hệt PNG)
+                const canvas = await capturePage(pages[i], null); 
+                const imgData = canvas.toDataURL('image/jpeg', 0.98);
+
+                if (i > 0) pdf.addPage(); 
+                pdf.addImage(imgData, 'JPEG', 0, 0, pageWidth, pageHeight);
+            }
+
+            pdf.save('QuyTrinh_ChungTu_Full.pdf');
+            btn.innerText = originalText;
+            alert("Đã tải xong PDF! Kiểm tra thư mục tải xuống.");
+        }
+    </script>
+</body>
+</html>
